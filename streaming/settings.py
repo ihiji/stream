@@ -55,6 +55,8 @@ DATABASES = {
     }
 }
 
+TEST_RUNNER = "mongotestrunner.TestRunner"
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -213,7 +215,6 @@ JENKINS_TASKS = (
 )
 
 JENKINS_TEST_RUNNER = "mongocitestrunner.TestRunner"
-#JENKINS_TEST_RUNNER = "django_jenkins.runner.CITestSuiteRunner"
 
 PROJECT_APPS = (
     'stream_app',
