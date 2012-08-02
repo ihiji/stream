@@ -1,0 +1,15 @@
+<strong><label for="permissionSelect" style="display:inline-block;width:100px;">Permissions:</label></strong>
+<select id="permissionSelect{{dealer_id}}{{contact_id}}" data-dojo-type="dojox.form.CheckedMultiSelect" name="permissionSelect" multiple=true>
+{% for p in perms %}
+  {% if p.name in currperms %}
+    <option value="{{p.name}}" selected=true>{{p.short_name}}</option>
+  {% else %}
+    <option value="{{p.name}}">{{p.short_name}}</option>
+  {% endif %}
+{% endfor %}
+</select>
+<br />
+<input type='hidden' data-dojo-type='dijit.form.TextBox' name='csrfmiddlewaretoken' 
+       value='{{csrf_token}}' id='csrfmiddlewaretoken{{dealer_id}}{{contact_id}}' />
+<button data-dojo-type="dijit.form.Button" type="submit">Submit</button>
+<br />

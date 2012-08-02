@@ -1,0 +1,28 @@
+<strong><label for="key" style="display:inline-block;width:100px;">Key:</label></strong>
+<input type="text" required="true" name="key" id="key{{deaer_id}}" placeholder="Enter Key Here"
+       data-dojo-type="dijit.form.ValidationTextBox" missingMessage="Need a key!!"
+       invalidMessage="Bad Format On Key" uppercase=true 
+       regExp="(([A-Z\d]){4}-){5}([A-Z\d]){4}" style='width:20em;display:inline-block;'>
+<br />
+<br />
+<strong><label for="email" style="display:inline-block;width:100px;">Plan:</label></strong>
+<select id="planList{{dealer_id}}" data-dojo-type="dijit.form.Select" name="planSelect" data-dojo-props="emptyLabel:'Please Select'"
+        required=true>
+    <option value="" selected="selected">Select a Plan</option>
+{% for p in plans %}
+    <option value="{{p.pid}}">{{p.name}}</option>
+{% endfor %}
+</select>
+<br />
+<br />
+<strong><label for="pass" style="display:inline-block;width:100px;">Add-Ons:</label></strong>
+<select id="addOnList{{dealer_id}}" data-dojo-type="dojox.form.CheckedMultiSelect" name="addOnSelect" multiple=true>
+{% for a in addons %}
+    <option value="{{a.pid}}">{{a.name}}</option>
+{% endfor %}
+</select>
+<br />
+<input type='hidden' data-dojo-type='dijit.form.TextBox' name='csrfmiddlewaretoken' 
+       value='{{csrf_token}}' id='csrfmiddlewaretoken{{dealer_id}}' />
+<button data-dojo-type="dijit.form.Button" name="addKeyButton" id="addKeyButton" disabled=true type="submit">Submit</button>
+<br />

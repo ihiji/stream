@@ -1,0 +1,180 @@
+        <script>
+            var statsLoaded = false;
+            require([   "dojo/dom-attr",
+                        "dojo/_base/xhr",
+                        "dojo/ready",
+                        "dojox/data/QueryReadStore",
+                        "dojox/grid/EnhancedGrid",
+                        "dojox/grid/enhanced/plugins/exporter/CSVWriter",
+                        "dojo/io/iframe",
+                        "dojo/domReady!",
+                    ], function (domAttr, xhr, ready, QueryReadStore, EnhancedGrid){
+                var ccDef = xhr.get({
+                    url: "/manage/json/stats/credit_card.json",
+                    handleAs: "json"
+                });
+                ccDef.then(function(res){
+                    domAttr.set("countWithoutCC","innerHTML",res.count);
+                    domAttr.set("percentWithoutCC","innerHTML","("+res.percent + ")");
+                }, function(err){
+                    //should never get here TODO cleanup error
+                });
+
+                ready(function(){
+                    statStore = new QueryReadStore({
+                        url: '/manage/json/stats/stats_overview.json',
+                    });
+
+                    grid = new EnhancedGrid({
+                        store: statStore,
+                        selectable: true,
+                        rowsPerPage: 50,
+                        keepRows: 400,
+                        autoHeight: 26,
+                        sortInfo: 1,
+                        rowSelector: 8,
+                        plugins: {
+                            exporter: true
+                        },
+                        structure: [
+                            {
+                                noscroll:true,
+                                cells: [
+                                    { name: "Dealer", 
+                                      field: "name", 
+                                      width: "250px" }
+                                ],
+                            },{
+                                cells: [
+                                    { name: "Site Count", 
+                                      field: "numSites", 
+                                      width: "70px" },
+                                    { name: "Site/Month", 
+                                      field: "sitesPerMonth", 
+                                      width: "75px" },
+                                    { name: "Average $/Site", 
+                                      field: "avgValue", 
+                                      width: "80px"},
+                                    { name: "Annual Value", 
+                                      field: "annualValue", 
+                                      width: "80px"},
+                                    { name: "Next Year Value", 
+                                      field: "nextTwelveValue", 
+                                      width: "100px"},
+                                    { name: "Last Activation", 
+                                      field: "mostRecentKey", 
+                                      width: "90px"},
+                                    { name: "Last Login", 
+                                      field: "lastLogin", 
+                                      width: "90px"},
+                                    { name: "CC on File", 
+                                      field: "ccOnFile", 
+                                      width: "80px"},
+                                    { name: "Sites in Red", 
+                                      field: "sitesInRed", 
+                                      width: "80px"},
+                                    { name: "Days in Red", 
+                                      field: "daysInRed", 
+                                      width: "80px"},
+                                    { name: "Sites in Yellow", 
+                                      field: "sitesInYellow", 
+                                      width: "80px"},
+                                    { name: "Days in Yellow", 
+                                      field: "daysInYellow", 
+                                      width: "80px"},
+                                    { name: "Has Pending", 
+                                      field: "hasPending", 
+                                      width: "80px"},
+                                    { name: "Notifications/Day (30 Day)", 
+                                      field: "notificationsPerDay30", 
+                                      width: "100px"},
+                                    { name: "Notifications/Day (7 Day)", 
+                                      field: "notificationsPerDay7", 
+                                      width: "100px"}
+                                ]
+                            }
+                        ]
+                    }, "statgrid");
+
+                    grid.on("RowDblClick", function(evt){
+                        var idx = evt.rowIndex,
+                            item = this.getItem(idx),
+                            store = this.store;
+                        var did = store.getValue(item,"dealerUUID");
+                        var name = store.getValue(item,"name")
+                        addTab(name,did, "/manage/dealer/" + did + "/");
+                    }, true);
+
+                    dojo.connect(grid, "_onFetchComplete", function(){
+                        if (!statsLoaded){
+                            dojo.byId('rowCountDisplay').innerHTML = grid.rowCount;
+                            statsLoaded = true;
+                            var valStats = xhr.get({
+                                url: "/manage/json/stats/value_stats.json",
+                                handleAs: "json"
+                            });
+                            valStats.then(function(res){
+                                domAttr.set("annualValue","innerHTML",res.annualValue);
+                                domAttr.set("nextTwelveValue","innerHTML",res.nextTwelveValue);
+                                domAttr.set("avgAnnualValue","innerHTML",res.avgAnnualValue);
+                                domAttr.set("avgNextTwelveValue","innerHTML",res.avgNextTwelveValue);
+                            }, function(err){
+                                //should never get here TODO cleanup error
+                            });
+                        }
+                    });
+                    // since we created this grid programmatically, call startup to render it
+                    grid.startup();
+                });
+            });
+
+
+            function exportAll(){
+                dijit.byId("statgrid").exportGrid("csv", function(str){
+                        downloadCSV(str);
+                    });
+            };
+
+            function exportSelected(){
+                var str = dijit.byId("statgrid").exportSelected("csv");
+                downloadCSV(str);
+            };
+
+            function downloadCSV(str){
+                var form = document.createElement('form');
+                dojo.attr(form, 'method', 'POST');
+                document.body.appendChild(form);
+                dojo.io.iframe.send({
+                        url: "/manage/export_to_csv",
+                        form: form,
+                        method: "POST",
+                        content: {
+                            exp: str,
+                            csrfmiddlewaretoken: '{{csrf_token}}'
+                        },
+                        timeout: 15000
+                });
+                document.body.removeChild(form);
+            };
+        </script> 
+        <h1>Snapshot of Dealer Stats</h1>
+        <h3>Please note that the stats may take a while to load the first time</h3>
+        <div id="dealerStats" style="width:100%">
+            <div id="dealercount"><h2>Dealers: <span id="rowCountDisplay" style="padding-left:1em;"></span></h2></div>
+            <div id="dealerCCOnFile"><h2>Dealers Without A CC On File: <span id="countWithoutCC" style="padding-left:1em;"></span><span id="percentWithoutCC" style="padding-left:1em;"></span></h2></div>
+            <div id="annualValueStats" style="overflow:hidden;width:800px;">
+                <div id="statLeft" style="float:left; width:400px;">
+                    <div><h2>Current Annual Value: <span id="annualValue" style="padding-left:1em;"></span></h2></div>
+                    <div><h2>Estimated Next 12 Month Value: <span id="nextTwelveValue" style="padding-left:1em;"></span></h2></div>
+                </div>
+                <div id="statRight" style="float:right; width:400px;">
+                    <div><h2>Average Dealer Value: <span id="avgAnnualValue" style="padding-left:1em;"></span></h2></div>
+                    <div><h2>Average Dealer Value (Next Year): <span id="avgNextTwelveValue" style="padding-left:1em;"></span></h2></div>
+                </div>
+            </div>
+            <button onclick="dijit.byId('statgrid').render();">Update List</button>
+            <button onclick="exportAll()">Export All to CSV</button>
+            <button onclick="exportSelected()">Export Selected Rows to CSV</button>
+            <div id="statgrid"></div> 
+        </div>
+        <br/>

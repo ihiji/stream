@@ -1,0 +1,88 @@
+        <button onclick="dijit.byId('{{dealer_id}}{{contact_id}}').refresh();">Refresh Tab</button>
+        <h1>Change settings for user {{contact.name}}<h1>
+        <br/>
+        <div id="changeButtonContainer{{contact_id}}">
+{% if not contact.primary and contact.active and contact.login_enabled %}
+            <div id="action_buttons">
+                <button id="primary"></button>
+            </div>
+{% endif %}
+        </div>
+        <h2>Contact Details</h2>
+        <table>
+{% for key, value in contact.items %}
+        <tr>
+            <td style="font-weight:bold">{{key}}:</td>
+            <td>{{value}}</td>
+        </tr>
+{% endfor %}
+        </table>
+{% if user %}
+        <h2>UserDetails</h2>
+        <table>
+{% for key, value in user.items %}
+        <tr>
+            <td style="font-weight:bold">{{key}}:</td>
+            <td>{{value}}</td>
+        </tr>
+{% endfor %}
+        </table>
+
+{% endif %}
+        <script>
+            require([   "dojox/form/CheckedMultiSelect", 
+                        "dijit/form/TextBox",
+            ]);
+            require(["dojo/_base/xhr",
+                     "dojo/dom",
+                     "dojo/on",
+                     "dijit/form/Button",
+                     "dojo/ready",
+                     "dijit/TooltipDialog",
+                     "dijit/form/DropDownButton",
+                     "dojo/domReady!"], 
+                function(xhr, dom, on, Button, ready, TooltipDialog, DropDownButton ) {
+                var primary_button = new Button({
+                    label: "Make Primary",
+                    onClick: function() {
+                        xhr.get({
+                            url: "/manage/dealer/{{dealer_id}}/contact/{{contact_id}}/make_primary",
+                            handleAs: "json",
+                            load: function(data){showMessage(data)},
+                            error: function(data){showMessage(data)}
+                        });
+                    } 
+                },
+                "primary");
+                
+                primary_button.startup();
+                ready(function(){
+                    var permissionDialog = new TooltipDialog({
+                        href: '/manage/dealer/{{dealer_id}}/contact/{{contact_id}}/set_permissions',
+                        execute: function(){
+                            xhr.post({
+                                url: '/manage/dealer/{{dealer_id}}/contact/{{contact_id}}/set_permissions',
+                                content: this.get('value'),
+                                handleAs: 'json',
+                                load: function(data){showMessage(data);},
+                                error: function(data){showMessage(data)}
+                            });
+                        },
+                    });
+                    permissionDialog.watch('state', function(property, oval, nval){
+                        if (nval == ""){
+                            dijit.byId("savePermissionsButton").set('disabled', false);
+                        } else {
+                            dijit.byId("savePermissionsButton").set('disabled', true);
+                        }
+                    });
+
+                    var permissionsButton = new DropDownButton({
+                        label: "Change Permissions",
+                        dropDown: permissionDialog
+                    });
+                    dom.byId("changeButtonContainer{{contact_id}}").appendChild(permissionsButton.domNode);
+                });
+            });
+            
+        </script>

@@ -1,5 +1,10 @@
 *.py[co]
 
+# Temp files
+~*
+.*.swo
+.*.swp
+
 # Packages
 *.egg
 *.egg-info

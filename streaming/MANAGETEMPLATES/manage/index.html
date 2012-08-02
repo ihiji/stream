@@ -1,0 +1,137 @@
+{% extends "manage/manage.html" %}
+{% comment %}
+
+Main page of the management portal.
+
+{% endcomment %}
+
+{% block title %}
+Management Portal
+{% endblock %}
+
+{% block headscripts %}
+    <script>
+        require(["dijit/registry", "dijit/layout/BorderContainer",
+                 "dijit/layout/TabContainer", "dojox/layout/ContentPane", 
+                 "dojo/_base/lang", "dojo/domReady!"],
+        function(registry, BorderContainer, TabContainer, ContentPane, lang){
+            // create the main appLayout BorderContainer
+            var appLayout = new BorderContainer({
+                design: "headline"
+            }, "appLayout");
+
+            // create the TabContainer
+            var contentTabs = new TabContainer({
+                region: "center",
+                id: "contentTabs",
+                tabPosition: "top",
+                style: "height: 100%; width: 100%;margin-top:5px;",
+            });
+
+            // add the TabContainer as a child of the BorderContainer
+            appLayout.addChild( contentTabs );
+
+            // create the BorderContainer edge regions
+            appLayout.addChild(
+                new ContentPane({
+                    region: "top",
+                    "class": "edgePanel",
+                    href: "/static/html/titlebar.html" 
+                })
+            );
+
+            contentTabs.addChild(
+                new ContentPane({
+                    id: "dealersTab",
+                    href: "/manage/dealer/",
+                    title: "Dealers",
+                    executeScripts: true
+                })
+            );
+
+            contentTabs.addChild(
+                new ContentPane({
+                    id: "sitesTab",
+                    href: "/manage/sites/",
+                    title: "Sites",
+                    executeScripts: true
+                })
+            );
+
+            contentTabs.addChild(
+                new ContentPane({
+                    href: "/manage/sites/upload_keys",
+                    title: "Add Keys",
+                    executeScripts: true
+                })
+            );
+
+            contentTabs.addChild(
+                new ContentPane({
+                    href: "/manage/stats/",
+                    title: "Dealer Stats",
+                    executeScripts: true,
+                    id: "statsPane"
+                })
+            );
+
+            appLayout.startup();
+        });
+        require(["dojo/_base/lang", "dojo/_base/declare", "dojox/layout/ContentPane"], function(lang, declare, ContentPane){
+        
+            dojo.global.addTab = function (name, uuid, url) {
+                pane = dijit.byId(uuid);
+                if (pane) {
+                    dijit.byId("contentTabs").selectChild(pane);
+                } else {
+                    var pane = new ContentPane({
+                        title: name,
+                        href: url,
+                        executeScripts: true,
+                        closable: true,
+                        parseOnLoad: true,
+                        selected: true,
+                        id: uuid
+                    });
+                    // add the new pane to our contentTabs widget
+                    dijit.byId("contentTabs").addChild(pane);
+                    dijit.byId("contentTabs").selectChild(pane);
+                }
+            };
+        });
+        require([
+            "dojo/dom-construct",
+            "dojo/fx/Toggler",
+            "dojo/dom-style",
+            "dojo/dom",
+            "dojo/domReady!"
+        ], function(domConstruct, Toggler, domStyle, dom){
+            var messages = domConstruct.create("div", {class:'messageBar', name:'messages'});
+            var messageToggle = new Toggler({
+                                            node: messages,
+                                            showDuration: 200,
+                                            hideDuration: 2000
+                                            });
+            messageToggle.hide();
+            domConstruct.place(messages,dojo.body(),"first");
+            dojo.global.showMessage = function(data){
+                var bg;
+                if (data.success){
+                    bg = '#59E259';
+                } else {
+                    bg = '#E25959';
+                }
+                domStyle.set(messages, "background", bg);
+                messages.innerHTML = '<span class="messageText">' + data.msg + '</span>';
+                messageToggle.show();
+                setTimeout(function(){ messageToggle.hide();
+                } , 3000);
+            };
+        });
+
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div id="appLayout" style="height:100%"></div>
+{% endblock %}

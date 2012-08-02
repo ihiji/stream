@@ -1,0 +1,141 @@
+        <script>
+            var grid, siteStore;
+            require([
+                "dojo/ready",
+                "dojox/data/QueryReadStore",
+                "dojo/parser",
+                "dojox/grid/EnhancedGrid",
+                "dojox/grid/enhanced/plugins/exporter/CSVWriter",
+                "dojo/io/iframe",
+                "dojo/domReady!",
+            ],  function(ready, QueryReadStore, parser, EnhancedGrid){
+                ready(function(){
+                    siteStore = new QueryReadStore({
+                        url: '/manage/json/sites.json',
+                    });
+
+                    grid = new EnhancedGrid({
+                        store: siteStore,
+                        selectable: true,
+                        rowsPerPage: 50,
+                        keepRows: 400,
+                        autoHeight: 26,
+                        sortInfo: 1,
+                        rowSelector: 8,
+                        plugins: {
+                            exporter: true
+                        },
+                        structure: [
+                            {
+                                noscroll:true,
+                                cells: [
+                                    { name: "Dealer", 
+                                      field: "dealer_name", 
+                                      width: "250px" },
+                                    { name: "Site", 
+                                      field: "name", 
+                                      width: "200px" },
+                                    { name: "Key", 
+                                      field: "key", 
+                                      width: "250px"},
+                                ],
+                            },{
+                                cells: [
+                                    { name: "Model", 
+                                      field: "model", 
+                                      width: "100px" },
+                                    { name: "Version", 
+                                      field: "ihiji", 
+                                      width: "100px" },
+                                    { name: "Last Request", 
+                                      field: "request_time", 
+                                      width: "100px"},
+                                    { name: "WAN IP", 
+                                      field: "current_wan_ip", 
+                                      width: "100px"},
+                                    { name: "LAN IP", 
+                                      field: "current_lan_ip", 
+                                      width: "100px"},
+                                    { name: "DNS 1", 
+                                      field: "current_lan_dns1", 
+                                      width: "100px"},
+                                    { name: "DNS 2", 
+                                      field: "current_lan_dns2", 
+                                      width: "100px"},
+                                    { name: "Plan Count", 
+                                      field: "number_of_devices", 
+                                      width: "100px"},
+                                    { name: "Charged Devices", 
+                                      field: "chargeable_devices", 
+                                      width: "100px"},
+                                    { name: "Site Value", 
+                                      field: "site_value", 
+                                      width: "100px"},
+                                    { name: "Renewal Date", 
+                                      field: "end_date", 
+                                      width: "100px"},
+                                    { name: "App Status", 
+                                      field: "app_status", 
+                                      width: "100px"}
+                                ]
+                            }
+                        ]
+                    }, "sitesOverviewGrid");
+
+                    grid.on("RowDblClick", function(evt){
+                        var idx = evt.rowIndex,
+                            item = this.getItem(idx),
+                            store = this.store;
+                        var did = store.getValue(item,"dealerUUID");
+                        var sid = store.getValue(item,"id");
+                        var name = store.getValue(item,"dealer_name") + " - " + store.getValue(item,"name")
+                        addTab(name,sid, "/manage/dealer/" + did + "/site/" + sid + "/");
+                    }, true);
+
+                    dojo.connect(grid, "_onFetchComplete", function(){
+                            dojo.byId('rowCountDisplay').innerHTML = grid.rowCount + " Sites Found";
+                    });
+                    
+                    // since we created this grid programmatically, call startup to render it
+                    grid.startup();
+                });
+            });
+            
+            function exportAllSitesOverview(){
+                dijit.byId("sitesOverviewGrid").exportGrid("csv", function(str){
+                        downloadCSV(str);
+                    });
+            };
+
+            function exportSelectedSitesOverview(){
+                var str = dijit.byId("sitesOverviewGrid").exportSelected("csv");
+                downloadCSV(str);
+            };
+
+            function downloadCSV(str){
+                var form = document.createElement('form');
+                dojo.attr(form, 'method', 'POST');
+                document.body.appendChild(form);
+                dojo.io.iframe.send({
+                        url: "/manage/export_to_csv",
+                        form: form,
+                        method: "POST",
+                        content: {
+                            exp: str,
+                            csrfmiddlewaretoken: '{{csrf_token}}'
+                        },
+                        timeout: 15000
+                });
+                document.body.removeChild(form);
+            };
+        </script>
+        <button onclick="dijit.byId('{{dealer_id}}').refresh();">Refresh Tab</button>
+        <h1>Overview of all sites</h1>
+        <div id="siteSummaryChangeButtonContainer"></div>
+        <br/>
+        </div>
+        <div id="rowCountDisplay"></div>
+        <button onclick="exportAllSitesOverview()">Export All to CSV</button>
+        <button onclick="exportSelectedSitesOverview()">Export Selected Rows to CSV</button>
+        <div id="sitesOverviewGrid"></div>
+
