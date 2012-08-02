@@ -1,14 +1,18 @@
 # Django settings for streaming project.
 
+import django
 import mongoengine
 import socket
 import os
 import sys
 
+DJANGO_ROOT = os.path.dirname(os.path.realpath(django.__file__))
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+
 DEBUG = False
 
 MONGO_DB = "stream_test"
-DUMP_DIR = "/tmp/stream_test/stream"
+DUMP_DIR = os.path.join(SITE_ROOT, '..', 'fixtures', 'stream')
 
 if socket.gethostname().startswith("staging"):
     SITE_ID = u'4fee099cbfd8491860000000'
@@ -25,18 +29,8 @@ else:
     DEBUG = True
     SITE_ID = u'4fdcd5f270a2e42e9300001c'
 
-    original_cwd = template_root = os.getcwd()
-    while '.git' not in os.listdir(template_root) and template_root != '/':
-        os.chdir('..')
-        template_root = os.getcwd()
-    template_root = os.path.join(template_root, 'streaming')
-    template_root = os.path.join(template_root, 'templates')
-    os.chdir(original_cwd)
-    if template_root == '/':
-        sys.exit('Did not find templates')
-
     TEMPLATE_DIRS = (
-        template_root,
+        os.path.join(SITE_ROOT, '..', 'templates'),
         # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
         # Always use forward slashes, even on Windows.
         # Don't forget to use absolute paths, not relative paths.
