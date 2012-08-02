@@ -18,10 +18,14 @@ sdist
 develop-eggs
 .installed.cfg
 
+# Collected Static Files
+static/
+
 # Installer logs
 pip-log.txt
 
 # Unit test / coverage reports
+reports/
 .coverage
 .tox
 
