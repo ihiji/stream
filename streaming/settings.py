@@ -7,6 +7,9 @@ import sys
 
 DEBUG = False
 
+MONGO_DB = "stream_test"
+DUMP_DIR = "/tmp/stream_test/stream"
+
 if socket.gethostname().startswith("staging"):
     SITE_ID = u'4fee099cbfd8491860000000'
     TEMPLATE_DIRS = (
@@ -157,6 +160,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_jenkins',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -203,8 +207,8 @@ connect('stream')
 
 JENKINS_TASKS = (
     'django_jenkins.tasks.with_coverage',
-    #'django_jenkins.tasks.django_tests',   # select one django or
-    'django_jenkins.tasks.dir_tests',      # directory tests discovery
+    'django_jenkins.tasks.django_tests',   # select one django or
+    #'django_jenkins.tasks.dir_tests',      # directory tests discovery
     'django_jenkins.tasks.run_pep8',
     'django_jenkins.tasks.run_pylint',
     'django_jenkins.tasks.run_pyflakes',
@@ -214,8 +218,9 @@ JENKINS_TASKS = (
     #'django_jenkins.tasks.lettuce_tests',
 )
 
-JENKINS_TEST_RUNNER = "django_jenkins.runner.CITestSuiteRunner"
+JENKINS_TEST_RUNNER = "mongocitestrunner.TestRunner"
+#JENKINS_TEST_RUNNER = "django_jenkins.runner.CITestSuiteRunner"
 
 PROJECT_APPS = (
-    'smartview_base',
+    'stream_app',
 )
