@@ -1,1 +1,44 @@
-SUP SON
+{% extends "base.html" %}
+
+{% comment %}
+{% endcomment %}
+
+{% block headscripts %}
+  <script>
+    require(["dojo/dom", "dojo/_base/query", "dojo/_base/xhr", "dojo/domReady!"], function(dom, query, xhr){
+      //function defs
+
+      //config
+      var greeting = dom.byId("entries-header");
+      query('#enter-word').on('click', function(q){
+        input   = dom.byId("stream-input")
+        entries = dom.byId("entries")
+
+        word = input.value
+        r    = dojo.doc.createElement('tr')
+        r.innerHTML = word
+        entries.appendChild(r)
+
+        xhr.post({
+          url:"/show_me/",
+          content: { 
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+            entry : word
+          },
+          load: function(msg) {
+            alert(msg)
+          }
+        })
+      })
+    });
+  </script>
+{% endblock %}
+
+{% block body %}
+  <p id="entries-header">Entries</p>
+  <table id="entries">
+  </table>
+  <input  id="stream-input" type="text"/>
+  <button id="enter-word"/>
+{% endblock %}
+

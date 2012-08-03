@@ -94,16 +94,7 @@ MEDIA_URL = ''
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
 
-original_cwd = STATIC_ROOT = os.getcwd()
-while '.git' not in os.listdir(STATIC_ROOT) and STATIC_ROOT != '/':
-    os.chdir('..')
-    STATIC_ROOT = os.getcwd()
-STATIC_ROOT = os.path.join(STATIC_ROOT, 'streaming')
-STATIC_ROOT = os.path.join(STATIC_ROOT, 'static')
-os.chdir(original_cwd)
-if STATIC_ROOT == '/':
-    sys.exit('Did not find static directory')
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(SITE_ROOT, '..', 'static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"

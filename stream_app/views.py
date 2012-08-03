@@ -35,4 +35,13 @@ def register(request, email, password):
     if request.method == 'GET':  return render(request, 'stream_app/register.html')
     u = User.objects.get_or_create(email=email)
 
+@login_required
+@require_POST
+def show_me(request):
+    # why does this not work? -> def show_me(request,entry):
+    entry = request.REQUEST['entry']
+    print '%%%%%%%%%%%%%%%%%%%%', entry
+    return HttpResponse("GOOD ENOUGH FOR GOV'T WORK", mimetype='text')
+
+
 

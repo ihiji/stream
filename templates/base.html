@@ -8,7 +8,21 @@ This template is a completely 100% generic HTML5 template.
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-        {% block head %}{% endblock %}
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/static/dojo-1.7.3/dojo/resources/dojo.css">
+    <link rel="stylesheet" href="/static/dojo-1.7.3/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="/static/dojo-1.7.3/dojox/grid/resources/claroGrid.css">
+<!-- <link rel="stylesheet" href="/static/css/style.css" media="screen"> -->
+
+    <!-- load dojo and provide config via data attribute -->
+    <!-- switch to google doc content if desired
+    <script src="http://ajax.googleapis.com/ajax/libs/dojo/1.7.1/dojo/dojo.js"
+    -->
+    <script src="/static/dojo-1.7.3/dojo/dojo.js"
+            data-dojo-config="async: true">
+    </script>
+    {% block headscripts %}{% endblock %}
+    {% block head %}{% endblock %}
     </head>
     <body class="claro">
         {% block body %}{% endblock %}
