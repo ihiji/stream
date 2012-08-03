@@ -8,8 +8,10 @@ from django.contrib.auth.views import login, logout
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'stream_app.views.index'),
-    url(r'^stream/$', 'stream_app.views.index', name='landing_page'),
-    url(r'^login/$', 'django.contrib.auth.views.login'),
+    url(r'^login/$', 'django.contrib.auth.views.login', name='login'),
+    url(r'^logout/$', 'django.contrib.auth.views.logout'),
+    url(r'^register/$', 'stream_app.views.register'),
+    url(r'^stream/$', 'stream_app.views.login_landing', name='landing_page'),
     # url(r'^$', 'streaming.views.home', name='home'),
     # url(r'^streaming/', include('streaming.foo.urls')),
 

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% comment %}
+
+Logout page. Have a nice day.
+
+{% endcomment %}
+
+{% block head %}
+    <title>Stream Logout page</title>
+{% endblock %}
+
+{% block body %}
+    <header>
+        <h1>ihiji invision Management Portal</h1>
+        <h2>Logout Page</h2>
+    </header>
+
+    <section>
+        <a href="{% url login %}">Login Again</a>
+    </section>
+{% endblock %}
