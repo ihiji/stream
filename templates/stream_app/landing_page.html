@@ -5,6 +5,7 @@
 
 {% block headscripts %}
   <script>
+    wordList = [];
     require(["dojo/dom", "dojo/_base/query", "dojo/_base/xhr", "dojo/domReady!"], function(dom, query, xhr){
       startTime = Math.round( new Date().getTime() / 1000);// unix timestamp, don't want ms
       // setup event handlers
@@ -14,6 +15,7 @@
         entries = dom.byId("entries");
 
         word = input.value;
+        wordList.push(word);
         r    = dojo.doc.createElement('tr');
         r.innerHTML = word;
         entries.appendChild(r);
@@ -39,11 +41,10 @@
       //stream save submit button
       query('#stream-saver-submit').on('click', function(saver){
         stream_name = dom.byId('stream-saver-text').value
-        ws = ['one', 'two', 'three']
         postArgs = { 
           url:"save",
           content:{ 
-            words: ws,
+            words: wordList,
             stream_name: stream_name,
             start_time : startTime,
             csrfmiddlewaretoken: "{{ csrf_token }}"
