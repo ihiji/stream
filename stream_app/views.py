@@ -60,8 +60,6 @@ def stream_save(request):
         s.entries     = [w.strip() for w in request.POST.getlist('words')]
         for w in request.POST.getlist('words'):
             print w
-            print dir(w)
-            break
         print '################################################################################'
         print s.entries
         s.entry_count = len(s.entries)

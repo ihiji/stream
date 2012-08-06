@@ -6,7 +6,7 @@
 {% block headscripts %}
   <script>
     wordList = [];
-    require(["dojo/dom", "dojo/_base/query", "dojo/_base/xhr", "dojo/domReady!"], function(dom, query, xhr){
+    require(["dojo/dom", "dojo/_base/query", "dojo/_base/xhr", "dojo/dom-attr", "dojo/domReady!"], function(dom, query, xhr, domAttr){
       startTime = Math.round( new Date().getTime() / 1000);// unix timestamp, don't want ms
       // setup event handlers
       //word entry
@@ -20,7 +20,7 @@
         r.innerHTML = word;
         entries.appendChild(r);
 
-//this should change to validate soon, and disallow submitting invalud words (allow spaces?)
+//TODO:this should change to validate soon, and disallow submitting invalud words (allow spaces?)
         dojo.xhrPost({
           url:"/show_me/",
           content: { 
