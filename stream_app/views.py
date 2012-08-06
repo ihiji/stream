@@ -51,17 +51,9 @@ def stream_save(request):
         resp = HttpResponse('already exists', mimetype='text/plain')
     else: 
         s.name        = request.POST['stream_name'].strip()
-        print '################################################################################'
-        print s.name
         s.start_time  = request.POST['start_time'].strip()
-        print '################################################################################'
-        print s.start_time
         s.end_time    = time.time()
         s.entries     = [w.strip() for w in request.POST.getlist('words')]
-        for w in request.POST.getlist('words'):
-            print w
-        print '################################################################################'
-        print s.entries
         s.entry_count = len(s.entries)
         s.user        = request.user
         s.save()
