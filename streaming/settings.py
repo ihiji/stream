@@ -142,11 +142,11 @@ ROOT_URLCONF = 'streaming.urls'
 WSGI_APPLICATION = 'streaming.wsgi.application'
 
 INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.messages',
+#'django.contrib.auth',
+#'django.contrib.contenttypes',
+#'django.contrib.sessions',
+#'django.contrib.sites',
+#'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_jenkins',
     # Uncomment the next line to enable the admin:
