@@ -5,7 +5,7 @@ from stream_app.models import Stream
 class StreamAppTestCase(TestCase):
     def setUp(self):
         super(StreamAppTestCase, self).setUp()
-        self.stream1 = Stream.objects.get(pk='501acc4b70a2e42ec1e05092')
+        self.stream1 = Stream.objects.get(name='food')
 
     def test_name_length(self):
         s = self.stream1

@@ -34,3 +34,6 @@ reports/
 
 #Mr Developer
 .mr.developer.cfg
+
+# stupid sqlite3 db
+stream
