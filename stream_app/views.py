@@ -41,7 +41,28 @@ def show_me(request):
     # why does this not work? -> def show_me(request,entry):
     entry = request.REQUEST['entry']
     print '%%%%%%%%%%%%%%%%%%%%', entry
-    return HttpResponse("GOOD ENOUGH FOR GOV'T WORK", mimetype='text')
+    return HttpResponse("GOOD ENOUGH FOR GOV'T WORK", mimetype='text/plain')
+
+@login_required
+@require_POST
+def stream_save(request):
+    s, was_created = Stream.objects.get_or_create(name=request.POST['stream_name'], user=request.user)
+    if was_created:
+        s.name        = request.POST['stream_name']
+        s.start_time  = request.POST['start_time']
+        s.end_time    = time.time()
+        s.entries     = request.POST.getlist('words')
+        print s.entries
+        print request.POST.getlist('words')
+        s.entry_count = len(s.entries)
+        s.user        = request.user
+        print dir(s)
+        return HttpResponse('saved stream!', mimetype='text/plain')
+    else: #already exists
+        # TODO: return already made, force new name
+        print 'skipped making'
+        return HttpResponse('already exists', mimetype='text/plain')
+    
 
 
 

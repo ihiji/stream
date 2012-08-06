@@ -6,35 +6,60 @@
 {% block headscripts %}
   <script>
     require(["dojo/dom", "dojo/_base/query", "dojo/_base/xhr", "dojo/domReady!"], function(dom, query, xhr){
-      //function defs
-
-      //config
-      var greeting = dom.byId("entries-header");
+      startTime = Math.round( new Date().getTime() / 1000);// unix timestamp, don't want ms
+      // setup event handlers
+      //word entry
       query('#enter-word').on('click', function(q){
-        input   = dom.byId("stream-input")
-        entries = dom.byId("entries")
+        input   = dom.byId("stream-input");
+        entries = dom.byId("entries");
 
-        word = input.value
-        r    = dojo.doc.createElement('tr')
-        r.innerHTML = word
-        entries.appendChild(r)
+        word = input.value;
+        r    = dojo.doc.createElement('tr');
+        r.innerHTML = word;
+        entries.appendChild(r);
 
-        xhr.post({
+//this should change to validate soon, and disallow submitting invalud words (allow spaces?)
+        dojo.xhrPost({
           url:"/show_me/",
           content: { 
             csrfmiddlewaretoken: "{{ csrf_token }}",
             entry : word
           },
           load: function(msg) {
-            alert(msg)
+            console.log(msg)
           }
-        })
-      })
+        });
+        input.value = ''
+      });
+      //stream save text field
+      query('#stream-saver-text').on('focus', function(focusEvent){
+        saver = dom.byId('stream-saver-text') // this is ghetto, but doesn't work w/o this line
+        saver.value = ''
+      });
+      //stream save submit button
+      query('#stream-saver-submit').on('click', function(saver){
+        stream_name = dom.byId('stream-saver-text').value
+        ws = ['one', 'two', 'three']
+        postArgs = { 
+          url:"save",
+          content:{ 
+            words: ws,
+            stream_name: stream_name,
+            start_time : startTime,
+            csrfmiddlewaretoken: "{{ csrf_token }}"
+          },
+          load: function(){
+            console.log('SAVED STREAM!!!!!!')
+          }
+        }
+        dojo.xhrPost(postArgs)
+      });
     });
   </script>
 {% endblock %}
 
 {% block body %}
+  <input  id="stream-saver-text" type="text" value="save stream as..."/><button id="stream-saver-submit" text="save">SAVE!</button><br>
   <p id="entries-header">Entries</p>
   <table id="entries">
   </table>

@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'django.contrib.auth.views.logout', name='logout'),
     url(r'^register/$', 'stream_app.views.register'),
     url(r'^stream/$', 'stream_app.views.login_landing', name='landing_page'),
+    url(r'^stream/save$', 'stream_app.views.stream_save', name='stream_save'),
     url(r'^show_me/$', 'stream_app.views.show_me', name='show_me')
     # url(r'^$', 'streaming.views.home', name='home'),
     # url(r'^streaming/', include('streaming.foo.urls')),
