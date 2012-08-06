@@ -57,6 +57,7 @@ def stream_save(request):
         s.entry_count = len(s.entries)
         s.user        = request.user
         s.save()
+        s.push_down_info()
         resp = HttpResponse('saved stream!', mimetype='text/plain')
     return resp
 

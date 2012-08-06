@@ -14,19 +14,19 @@ class Stream(Document):
     def __unicode__(self):
         return self.name
 
-    def push_down_info(stream):
+    def push_down_info(self):
         '''
         take apart the stream and push down the associated info and connections
         call this /after/ a stream has been full made
         '''
-        entriesCount = len(stream.entries)
-        for idx in range(entriesCount):
-            entry = stream.entries[idx]
+        num_entries = len(self.entries)
+        for idx in range(num_entries):
+            entry = self.entries[idx]
             word, was_created = Word.objects.get_or_create(word=entry)
             if self not in word.streams:
                 word.streams.append(self)
             if idx > 0:
-                previous = stream.entries[idx - 1]
+                previous = self.entries[idx - 1]
                 if previous not in word.lead_ins:
                     word.lead_ins.append(previous)
                 k, k_was_created = Link.objects.get_or_create(lead_in=previous, follow_out=entry)
@@ -35,8 +35,8 @@ class Stream(Document):
                 if self not in k.streams:
                     k.streams.append(self)
                 k.save()
-            if idx < entry_count - 1:
-                next = stream.entries[idx + 1]
+            if idx < num_entries - 1:
+                next = self.entries[idx + 1]
                 if next not in word.follow_outs:
                     word.follow_outs.append(next)
                 k, k_was_created = Link.objects.get_or_create(lead_in=entry, follow_out=next)
@@ -49,13 +49,13 @@ class Stream(Document):
 
 
 class Link(Document):
-    follow_out = ReferenceField('Word')
-    lead_in    = ReferenceField('Word')
+    lead_in    = StringField(regex='[a-zA-Z]{1,40}')
+    follow_out = StringField(regex='[a-zA-Z]{1,40}')
     count      = IntField(min_value=1, default=1)
     streams    = ListField(ReferenceField('Stream', reverse_delete_rule=PULL))
 
     def __unicode__(self):
-        return self.lead_in.word + '_' + self.follow_out.word
+        return self.lead_in + '->' + self.follow_out
 
 
 class Word(Document):
