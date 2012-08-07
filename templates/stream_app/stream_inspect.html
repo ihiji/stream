@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% comment %}
+{% endcomment %}
+
+{% block headscripts %} {% endblock %}
+
+{% block body %}
+  <table id="entries"><tbody>
+    {% for e in entries %} 
+      <tr><td><a href="/word/show/{{e}}"> {{ e }} </a></td></tr>
+    {% endfor %}
+  </tbody></table>
+{% endblock %}
+

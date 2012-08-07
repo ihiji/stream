@@ -23,6 +23,12 @@ class Stream(Document):
         for idx in range(num_entries):
             entry = self.entries[idx]
             word, was_created = Word.objects.get_or_create(word=entry)
+            if was_created:
+                word.stream_count = 1
+                word.streams = [self]
+            else:
+                word.stream_count += 1
+                word.streams.append(self)
             if self not in word.streams:
                 word.streams.append(self)
             if idx > 0:
