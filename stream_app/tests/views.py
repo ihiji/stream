@@ -6,4 +6,4 @@ class StreamAppViewTestCase(TestCase):
 
     def test_index(self):
         resp = self.client.get('/')
-        self.assertEqual(resp.status_code, 900)
+        self.assertEqual(resp.status_code, 200)
