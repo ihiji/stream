@@ -2,9 +2,9 @@ from django.test import TestCase
 from stream_app.models import Stream, Word, Link
 import time
 
-class StreamAppTestCase(TestCase):
+class StreamAppModelTestCase(TestCase):
     def setUp(self):
-        super(StreamAppTestCase, self).setUp()
+        super(StreamAppModelTestCase, self).setUp()
         self.stream1 = Stream.objects.get(name='food')
 
         self.ts, was_created = Stream.objects.get_or_create(name='testStream')
