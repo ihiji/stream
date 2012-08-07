@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% comment %}
+{% endcomment %}
+
+{% block headscripts %} {% endblock %}
+
+{% block body %}
+  <table id="streams"><tbody>
+    {% for s in streams %} 
+      <tr><td><a href="/stream/show/{{s.name}}"> {{ s.name }} </a></td></tr>
+    {% endfor %}
+  </tbody></table>
+{% endblock %}
+
