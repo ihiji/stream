@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% comment %}
+{% endcomment %}
+
+{% block headscripts %} {% endblock %}
+
+{% block body %}
+  <table id="stats"><tbody>
+    <tr><td>word</td><td>{{ word }}</td></tr>
+    <tr><td>hits</td><td>{{ hits }}</td></tr>
+    <tr><td>stream count</td><td>{{ stream_count }}</td></tr>
+  </tbody></table>
+{% endblock %}
+
