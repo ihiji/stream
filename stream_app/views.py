@@ -63,12 +63,14 @@ def stream_save(request):
 
 @login_required
 def user_streams(request):
+    '''push out user streams sorte by name'''
     streams = Stream.objects(user=request.user)
     streams = sorted(streams, key=lambda s: s.name)
     return render_to_response('stream_app/stream_list.html', {'streams':streams})
 
 @login_required
 def stream_viewer(request, stream_name):
+    '''push out stream stats'''
     try:
         stream = Stream.objects.get(user=request.user, name=stream_name)
     except: # should catch no document
@@ -77,6 +79,7 @@ def stream_viewer(request, stream_name):
 
 @login_required
 def word_viewer(request, word):
+    '''push out word info'''
     print word
     try:
         word = Word.objects.get(word=word)
