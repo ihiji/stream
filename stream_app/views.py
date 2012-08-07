@@ -1,11 +1,11 @@
 # our code
-from stream_app.models import Stream, User
+from stream_app.models import Stream, User, Word
 
 # django imports
 from django.shortcuts               import (get_list_or_404, get_object_or_404, render_to_response,
                                             render)
 from django.views.decorators.http   import require_http_methods, require_GET, require_POST
-from django.http                    import HttpResponseRedirect, HttpResponse
+from django.http                    import HttpResponseRedirect, HttpResponse, Http404
 from django.core.urlresolvers       import reverse
 from django.core                    import serializers
 from django.contrib.auth.decorators import login_required
@@ -61,3 +61,26 @@ def stream_save(request):
         resp = HttpResponse('saved stream!', mimetype='text/plain')
     return resp
 
+@login_required
+def user_streams(request):
+    streams = Stream.objects(user=request.user)
+    streams = sorted(streams, key=lambda s: s.name)
+    return render_to_response('stream_app/stream_list.html', {'streams':streams})
+
+@login_required
+def stream_viewer(request, stream_name):
+    try:
+        stream = Stream.objects.get(user=request.user, name=stream_name)
+    except: # should catch no document
+        raise Http404
+    return render_to_response('stream_app/stream_inspect.html', {'entries':stream.entries})
+
+@login_required
+def word_viewer(request, word):
+    print word
+    try:
+        word = Word.objects.get(word=word)
+    except Exception, e: # should catch no document
+        print e
+        raise Http404
+    return render_to_response('stream_app/word_inspect.html', {'word':word.word, 'hits':word.hits, 'stream_count':word.stream_count})
